@@ -16,7 +16,7 @@ pipeline {
       steps {
         parallel(
           "Soak Test": {
-            sh 'locust -f roles/perf_testing/events_miq.py --host $HAWKULAR_HOST --port $HAWKULAR_PORT -r $MIQ_CLIENTS_RATE -c $MIQ_CLIENTS --print-stats --no-web'
+            sh 'locust -f roles/perf_testing/events_miq.py --host $HAWKULAR_HOST --port $HAWKULAR_PORT -r $MIQ_CLIENTS_RATE -c $MIQ_CLIENTS --print-stats --no-web -n $NUM_REQUESTS'
 
           },
           "Gather Logs from Hawkular Services Pods": {
