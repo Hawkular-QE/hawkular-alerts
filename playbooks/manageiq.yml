@@ -1,0 +1,18 @@
+---
+- hosts: localhost
+  become: yes
+  vars_prompt:
+    - name: hawkular_hostname
+      prompt: "Hawkular Hostname"
+      default: "localhost"
+      private: no
+    - name: hawkular_port
+      prompt: "Hawkular Port"
+      default: 8080
+      private: no
+    - name: hawkular_tenant
+      prompt: "Hawkular Tenant"
+      default: "hawkular"
+      private: no
+  roles:
+   - role: manageiq_testing

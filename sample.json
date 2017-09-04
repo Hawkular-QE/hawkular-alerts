@@ -1,0 +1,126 @@
+[
+    {
+        "tenantId": "hawkular",
+        "id": "MiQ-region-2ecdd959-4b31-45c1-bc5a-afc9ca8e9fcf-ems-1d05c128-af7f-409d-8855-4ec373930bc6-alert-26-1",
+        "name": "Test-Alert1 for EAP7-Standalone",
+        "description": "Test-Alert1",
+        "type": "MEMBER",
+        "eventType": "EVENT",
+        "eventCategory": null,
+        "eventText": null,
+        "severity": "MEDIUM",
+        "context": {
+            "dataId.hm.prefix": "hm_g_",
+            "dataId.hm.type": "gauge",
+            "miq.alert_profiles": "20",
+            "resource_path": "/t;hawkular/f;7402c000-6df6-46ae-9e79-9b4f71aa0ce4/r;EAP7-Standalone~~"
+        },
+        "tags": {
+            "miq.event_type": "hawkular_alert",
+            "miq.resource_type": "MiddlewareServer"
+        },
+        "autoDisable": false,
+        "autoEnable": false,
+        "autoResolve": false,
+        "autoResolveAlerts": true,
+        "autoResolveMatch": "ALL",
+        "dataIdMap": {
+            "WildFly Memory Metrics~Heap Max": "hm_g_MI~R~[7402c000-6df6-46ae-9e79-9b4f71aa0ce4/EAP7-Standalone~~]~MT~WildFly Memory Metrics~Heap Max",
+            "WildFly Memory Metrics~Heap Used": "hm_g_MI~R~[7402c000-6df6-46ae-9e79-9b4f71aa0ce4/EAP7-Standalone~~]~MT~WildFly Memory Metrics~Heap Used"
+        },
+        "memberOf": "MiQ-region-2ecdd959-4b31-45c1-bc5a-afc9ca8e9fcf-ems-1d05c128-af7f-409d-8855-4ec373930bc6-alert-26",
+        "enabled": true,
+        "firingMatch": "ANY",
+        "source": "_none_"
+    },
+    {
+        "tenantId": "hawkular",
+        "id": "MiQ-region-2ecdd959-4b31-45c1-bc5a-afc9ca8e9fcf-ems-1d05c128-af7f-409d-8855-4ec373930bc6-alert-26",
+        "name": "Test-Alert1",
+        "description": "Test-Alert1",
+        "type": "GROUP",
+        "eventType": "EVENT",
+        "eventCategory": null,
+        "eventText": null,
+        "severity": "MEDIUM",
+        "context": {
+            "dataId.hm.prefix": "hm_g_",
+            "dataId.hm.type": "gauge",
+            "miq.alert_profiles": "20"
+        },
+        "tags": {
+            "miq.event_type": "hawkular_alert",
+            "miq.resource_type": "MiddlewareServer"
+        },
+        "autoDisable": false,
+        "autoEnable": false,
+        "autoResolve": false,
+        "autoResolveAlerts": true,
+        "autoResolveMatch": "ALL",
+        "enabled": true,
+        "firingMatch": "ANY",
+        "source": "_none_"
+    },
+    {
+        "tenantId": "hawkular",
+        "id": "MiQ-region-783cc0e5-fa5e-4e85-a02c-e2af8b6c1520-ems-18a1dbc0-bcc4-40c6-869c-c834500c33c1-alert-26-1",
+        "name": "Test-Alert-Two for EAP7-Standalone",
+        "description": "Test-Alert-Two",
+        "type": "MEMBER",
+        "eventType": "EVENT",
+        "eventCategory": null,
+        "eventText": null,
+        "severity": "MEDIUM",
+        "context": {
+            "dataId.hm.prefix": "hm_g_",
+            "dataId.hm.type": "gauge",
+            "miq.alert_profiles": "20",
+            "resource_path": "/t;hawkular/f;7402c000-6df6-46ae-9e79-9b4f71aa0ce4/r;EAP7-Standalone~~"
+        },
+        "tags": {
+            "miq.event_type": "hawkular_alert",
+            "miq.resource_type": "MiddlewareServer"
+        },
+        "autoDisable": false,
+        "autoEnable": false,
+        "autoResolve": false,
+        "autoResolveAlerts": true,
+        "autoResolveMatch": "ALL",
+        "dataIdMap": {
+            "WildFly Memory Metrics~Heap Max": "hm_g_MI~R~[7402c000-6df6-46ae-9e79-9b4f71aa0ce4/EAP7-Standalone~~]~MT~WildFly Memory Metrics~Heap Max",
+            "WildFly Memory Metrics~Heap Used": "hm_g_MI~R~[7402c000-6df6-46ae-9e79-9b4f71aa0ce4/EAP7-Standalone~~]~MT~WildFly Memory Metrics~Heap Used"
+        },
+        "memberOf": "MiQ-region-783cc0e5-fa5e-4e85-a02c-e2af8b6c1520-ems-18a1dbc0-bcc4-40c6-869c-c834500c33c1-alert-26",
+        "enabled": true,
+        "firingMatch": "ANY",
+        "source": "_none_"
+    },
+    {
+        "tenantId": "hawkular",
+        "id": "MiQ-region-783cc0e5-fa5e-4e85-a02c-e2af8b6c1520-ems-18a1dbc0-bcc4-40c6-869c-c834500c33c1-alert-26",
+        "name": "Test-Alert-Two",
+        "description": "Test-Alert-Two",
+        "type": "GROUP",
+        "eventType": "EVENT",
+        "eventCategory": null,
+        "eventText": null,
+        "severity": "MEDIUM",
+        "context": {
+            "dataId.hm.prefix": "hm_g_",
+            "dataId.hm.type": "gauge",
+            "miq.alert_profiles": "20"
+        },
+        "tags": {
+            "miq.event_type": "hawkular_alert",
+            "miq.resource_type": "MiddlewareServer"
+        },
+        "autoDisable": false,
+        "autoEnable": false,
+        "autoResolve": false,
+        "autoResolveAlerts": true,
+        "autoResolveMatch": "ALL",
+        "enabled": true,
+        "firingMatch": "ANY",
+        "source": "_none_"
+    }
+]
