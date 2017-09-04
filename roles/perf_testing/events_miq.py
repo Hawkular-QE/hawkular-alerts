@@ -65,7 +65,6 @@ class ProfileMiqEvents(TaskSet):
         url = self.service_url('events') + "?tags=" + tags + additionalParams
 
         with self.client.get(url= url, headers=self.headers(),  catch_response=True) as response:
-              print(response.content)
               if (response.status_code == 500 or  response.status_code == 400):
                  print(response.content)
 
