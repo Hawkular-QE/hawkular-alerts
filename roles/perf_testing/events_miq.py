@@ -6,6 +6,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
+author Guilherme Baufaker Rego
+
    http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
@@ -18,9 +20,11 @@ from hawkular.alerts import Trigger, TriggerMode, HawkularAlertsClient, Conditio
 from hawkular.client import HawkularMetricsConnectionError
 from locust import HttpLocust, TaskSet, task
 from datetime import datetime, timedelta
+from locust.exception import StopLocust
 import json
 import pdb
 import csv
+import base64
 import os
 
 class ProfileMiqEvents(TaskSet):
@@ -28,14 +32,16 @@ class ProfileMiqEvents(TaskSet):
     def service_url(self,object):
         return self.base._service_url(object)
 
-    def headers(self):
-        headers = {
-            'authorization': "Basic amRvZTpwYXNzd29yZA==",
+    def headers(self, username, password, tenant):
+
+       b64Val=  base64.b64encode(username + ":" + password)
+       headers = {
+            'Authorization' : "Basic %s" % b64Val,
             'content-type': "application/json"
         }
 
-        headers['hawkular-tenant'] = "hawkular"
-        return headers
+       headers['hawkular-tenant'] = tenant
+       return headers
 
     @task(1)
     def create_load(self):
@@ -43,6 +49,9 @@ class ProfileMiqEvents(TaskSet):
         host = os.environ['HAWKULAR_HOST']
         username = os.environ['HAWKULAR_USERNAME']
         password = os.environ['HAWKULAR_PASSWORD']
+        tenant = os.environ['HAWKULAR_TENANT']
+
+
 
         startTimeEnabled = json.loads(os.environ['START_TIME'])
         thin = json.loads(os.environ['THIN'])
@@ -58,15 +67,17 @@ class ProfileMiqEvents(TaskSet):
             additionalParams = additionalParams + thin
 
 
-        self.base = HawkularAlertsClient(tenant_id='dummy', host=host, port=port,
+        self.base = HawkularAlertsClient(tenant_id=tenant, host=host, port=port,
         username=username, password=password)
 
         tags = "miq.event_type|*"
         url = self.service_url('events') + "?tags=" + tags + additionalParams
 
-        with self.client.get(url= url, headers=self.headers(),  catch_response=True) as response:
-              if (response.status_code == 500 or  response.status_code == 400):
+        with self.client.get(url= url, headers=self.headers(username, password, tenant),
+        catch_response=True) as response:
+              if (response.status_code != 200):
                  print(response.content)
+                 raise StopLocust()
 
 class ManageIQUser(HttpLocust):
     task_set =  ProfileMiqEvents
