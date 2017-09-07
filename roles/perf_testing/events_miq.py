@@ -86,7 +86,7 @@ class ManageIQUser(HttpLocust):
     influxUser = os.environ['INFLUX_USER']
     influxPassword = os.environ['INFLUX_PASSWORD']
     global client
-    client = InfluxDBClient(database='hawkular_alerts_soak')
+    client = InfluxDBClient(username=influxUser, password=influxPassword, database='hawkular_alerts_soak')
 
     def __init__(self):
         super(ManageIQUser, self).__init__()
