@@ -21,11 +21,14 @@ from hawkular.client import HawkularMetricsConnectionError
 from locust import HttpLocust, TaskSet, task
 from datetime import datetime, timedelta
 from locust.exception import StopLocust
+import locust.stats
+import locust.events
 import json
 import pdb
 import csv
 import base64
 import os
+from influxdb import InfluxDBClient
 
 class ProfileMiqEvents(TaskSet):
 
@@ -76,8 +79,37 @@ class ProfileMiqEvents(TaskSet):
         with self.client.get(url= url, headers=self.headers(username, password, tenant),
         catch_response=True) as response:
               if (response.status_code != 200):
-                 print(response.content)
                  raise StopLocust()
 
 class ManageIQUser(HttpLocust):
     task_set =  ProfileMiqEvents
+    influxUser = os.environ['INFLUX_USER']
+    influxPassword = os.environ['INFLUX_PASSWORD']
+    global client
+    client = InfluxDBClient(database='hawkular_alerts_soak')
+
+    def __init__(self):
+        super(ManageIQUser, self).__init__()
+        locust.events.request_success += self.hook_request_success
+        locust.events.request_failure += self.hook_request_fail
+
+    def hook_request_success(self, request_type, name, response_time, response_length):
+        metrics = {}
+        metrics['measurement'] = "request"
+        fields = {}
+        fields ['request_type'] = request_type
+        fields ['response_time'] = response_time
+        fields['response_length'] = response_length
+        fields['name'] = name
+        metrics['fields'] = fields
+        client.write_points([metrics])
+
+    def hook_request_fail(self, request_type, name, response_time, exception):
+           metrics = {}
+           metrics['measurement'] = "fail"
+           fields = {}
+           fields ['response_time'] = response_time
+           fields['exception'] = exception
+           fields['name'] = name
+           metrics['fields'] = fields
+           client.write_points([metrics])
