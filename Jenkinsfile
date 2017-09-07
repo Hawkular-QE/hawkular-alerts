@@ -15,7 +15,7 @@ pipeline {
     stage('Locust Execution') {
       steps {
           "Soak Test": {
-            sh 'locust -f roles/perf_testing/events_miq.py --host $HAWKULAR_HOST --port $HAWKULAR_PORT -r $MIQ_CLIENTS_RATE -c $MIQ_CLIENTS --print-stats --no-web -n $NUM_REQUESTS'
+            sh 'locust -f roles/perf_testing/events_miq.py --host $HAWKULAR_HOST --port $HAWKULAR_PORT -r $MIQ_CLIENTS_RATE -c $MIQ_CLIENTS --print-stats --no-web -n $NUM_REQUESTS  --only-summary' 
           },
       }
     }
