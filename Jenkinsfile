@@ -15,22 +15,18 @@ pipeline {
     stage('Locust Execution') {
 
       when {
-        expression {
-          return env.MIQ_REQUESTS == 'true';
+         environment name: 'MIQ_REQUESTS ', value: 'true'
         }
         steps {
               sh 'locust -f roles/perf_testing/events_miq.py --host $HAWKULAR_HOST --port $HAWKULAR_PORT -r $MIQ_CLIENTS_RATE -c $MIQ_CLIENTS --print-stats --no-web -n $NUM_REQUESTS  --only-summary'
         }
-      }
 
-      when {
-        expression {
-          return env.MIQ_REQUESTS == 'false';
-        }
+        when {
+           environment name: 'MIQ_REQUESTS ', value: 'false'
+          }
         steps {
               sh 'locust -f roles/perf_testing/events_miq.py --host $HAWKULAR_HOST --port $HAWKULAR_PORT -r $MIQ_CLIENTS_RATE -c $MIQ_CLIENTS --print-stats --no-web  --only-summary'
         }
       }
      }
     }
-  }
