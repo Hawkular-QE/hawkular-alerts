@@ -28,6 +28,7 @@ import pdb
 import csv
 import base64
 import os
+import random
 from influxdb import InfluxDBClient
 
 class ProfileMiqEvents(TaskSet):
@@ -84,7 +85,10 @@ class ProfileMiqEvents(TaskSet):
 class ManageIQUser(HttpLocust):
     task_set =  ProfileMiqEvents
     influxUser = os.environ['INFLUX_USER']
+    global id
+    id =  random.getrandbits(128)
     influxPassword = os.environ['INFLUX_PASSWORD']
+    buildNumber = os.environ['BUILD_NUMBER']
     global client
     client = InfluxDBClient(username=influxUser, password=influxPassword, database='hawkular_alerts_soak')
 
@@ -95,6 +99,8 @@ class ManageIQUser(HttpLocust):
 
     def hook_request_success(self, request_type, name, response_time, response_length):
         metrics = {}
+        tags = {}
+        tags['execution'] = id
         metrics['measurement'] = "request"
         fields = {}
         fields ['request_type'] = request_type
@@ -102,6 +108,7 @@ class ManageIQUser(HttpLocust):
         fields['response_length'] = response_length
         fields['name'] = name
         metrics['fields'] = fields
+        metrics['tags'] = tags
         client.write_points([metrics])
 
     def hook_request_fail(self, request_type, name, response_time, exception):
