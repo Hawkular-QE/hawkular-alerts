@@ -31,6 +31,12 @@ import os
 import random
 from influxdb import InfluxDBClient
 
+def create_influxdb_connection():
+    influxUser = os.environ['INFLUX_USER']
+    influxPassword = os.environ['INFLUX_PASSWORD']
+    return InfluxDBClient(username=influxUser, password=influxPassword, database='hawkular_alerts_soak')
+
+
 class ProfileMiqEvents(TaskSet):
 
     def service_url(self,object):
@@ -54,9 +60,6 @@ class ProfileMiqEvents(TaskSet):
         username = os.environ['HAWKULAR_USERNAME']
         password = os.environ['HAWKULAR_PASSWORD']
         tenant = os.environ['HAWKULAR_TENANT']
-
-
-
         startTimeEnabled = json.loads(os.environ['START_TIME'])
         thin = json.loads(os.environ['THIN'])
 
@@ -77,25 +80,28 @@ class ProfileMiqEvents(TaskSet):
         tags = "miq.event_type|*"
         url = self.service_url('events') + "?tags=" + tags + additionalParams
 
+        global response_json
+
         with self.client.get(url= url, headers=self.headers(username, password, tenant),
         catch_response=True) as response:
-              if (response.status_code != 200):
+              if(response.status_code == 200):
+                  response_json = json.loads(response.content)
+              else:
                  raise StopLocust()
 
 class ManageIQUser(HttpLocust):
+    global client
+    client = create_influxdb_connection()
     task_set =  ProfileMiqEvents
-    influxUser = os.environ['INFLUX_USER']
     global id
     id =  random.getrandbits(128)
-    influxPassword = os.environ['INFLUX_PASSWORD']
-    buildNumber = os.environ['BUILD_NUMBER']
-    global client
-    client = InfluxDBClient(username=influxUser, password=influxPassword, database='hawkular_alerts_soak')
+
 
     def __init__(self):
         super(ManageIQUser, self).__init__()
         locust.events.request_success += self.hook_request_success
         locust.events.request_failure += self.hook_request_fail
+
 
     def hook_request_success(self, request_type, name, response_time, response_length):
         metrics = {}
@@ -106,6 +112,7 @@ class ManageIQUser(HttpLocust):
         fields ['request_type'] = request_type
         fields ['response_time'] = response_time
         fields['response_length'] = response_length
+        fields['events_count'] = len(response_json)
         fields['name'] = name
         metrics['fields'] = fields
         metrics['tags'] = tags
