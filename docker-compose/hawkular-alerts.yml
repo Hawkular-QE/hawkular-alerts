@@ -1,5 +1,5 @@
 #
-# Copyright 2014-2017 Red Hat, Inc. and/or its affiliates
+# Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
 # and other contributors as indicated by the @author tags.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,26 +15,18 @@
 # limitations under the License.
 #
 
-hawkularMetrics:
-  image: "gbaufake/hawkular-metrics:latest"
+# Hawkular Alerting
+hawkularAlerts:
+  image: "hawkular/hawkular-alerts:latest"
   ports:
     - "8080:8080"
     - "8787:8787"
     - "9042:9042"
   volumes:
     - /tmp/opt/hawkular/server:/opt/data
-    - ./tmp/opt/hawkular/config.properties:/tmp/hawkular-metrics/scripts/config.properties
-  links:
-    - cassandra
+    - ./config.properties:/opt/hawkular-alerting-tutorial/scripts/config.properties
   environment:
     - TZ=$TZ
     - JAVA_OPTS=$JAVA_OPTS
-    - CASSANDRA_NODES=cassandra
     - HAWKULAR_USER=jdoe
     - HAWKULAR_PASSWORD=password
-# The used Cassandra container
-cassandra:
-  image: cassandra:3.0.14
-  environment:
-    - TZ=$TZ
-    - CASSANDRA_START_RPC=true
