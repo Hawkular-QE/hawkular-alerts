@@ -54,28 +54,18 @@ class ProfileMiqEvents(TaskSet):
        return headers
 
     @task(1)
-    def create_load(self):
+    def check_events(self):
         port = os.environ['HAWKULAR_PORT']
         host = os.environ['HAWKULAR_HOST']
         username = os.environ['HAWKULAR_USERNAME']
         password = os.environ['HAWKULAR_PASSWORD']
         tenant = os.environ['HAWKULAR_TENANT']
-        startTimeEnabled = json.loads(os.environ['START_TIME'])
-        thin = json.loads(os.environ['THIN'])
-
-        additionalParams = ""
-
-        if startTimeEnabled:
-            startTime = int((datetime.now() - timedelta(minutes=1)).strftime("%s")) * 1000
-            additionalParams = "&startTime=" + str(startTime)
-
-        if thin:
-            thin = "&thin=true"
-            additionalParams = additionalParams + thin
 
 
-        self.base = HawkularAlertsClient(tenant_id=tenant, host=host, port=port,
-        username=username, password=password)
+        startTime = int((datetime.now() - timedelta(minutes=1)).strftime("%s")) * 1000
+        additionalParams = "&startTime=" + str(startTime)+ "&thin=true"
+
+        self.base = HawkularAlertsClient(tenant_id=tenant, host=host, port=port, username=username, password=password)
 
         tags = "miq.event_type|*"
         url = self.service_url('events') + "?tags=" + tags + additionalParams
@@ -84,7 +74,7 @@ class ProfileMiqEvents(TaskSet):
 
         with self.client.get(url= url, headers=self.headers(username, password, tenant),
         catch_response=True) as response:
-              if(response.status_code == 200):
+              if response.status_code == 200:
                   response_json = json.loads(response.content)
               else:
                  raise StopLocust()
@@ -120,10 +110,12 @@ class ManageIQUser(HttpLocust):
 
     def hook_request_fail(self, request_type, name, response_time, exception):
            metrics = {}
+           tags['execution'] = id
            metrics['measurement'] = "fail"
            fields = {}
            fields ['response_time'] = response_time
            fields['exception'] = exception
            fields['name'] = name
            metrics['fields'] = fields
+           metrics['tags'] = tags
            client.write_points([metrics])
