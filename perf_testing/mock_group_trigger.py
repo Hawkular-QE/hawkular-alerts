@@ -72,7 +72,7 @@ def initialize_sample_group_trigger(miq_alert_name, trigger_id):
     trigger =  Trigger()
     trigger.id = trigger_id
     trigger.description = miq_alert_name
-    trigger.name = metric_name
+    trigger.name = miq_alert_name
     trigger.firing_match = 'ANY'
     trigger.event_type = 'EVENT'
     trigger.severity = Severity.MEDIUM
@@ -84,6 +84,7 @@ def initialize_sample_group_trigger(miq_alert_name, trigger_id):
 def create_group_member(group_trigger, dataId, dataId2, environment):
     for i in range(environment.num_servers):
        server_name = "server-" + str(i)
+       print("Creating Group Member for {0}".format(server_name))
        group_member = initialize_sample_group_member(group_trigger, dataId, dataId2, server_name)
        client.create_group_member(group_member)
 
@@ -99,13 +100,15 @@ dataId = 'mw_heap_used'
 dataId2 = 'mw_heap_max'
 
 # Sample MIQ-Alert Name
-miq_alert_name =  'EAP Memory Metrics~Heap Rate'
+miq_alert_name =  ' MIQ - EAP Memory Metrics~Heap Rate'
 
 
 # Generate Group Trigger
 group_trigger = initialize_sample_group_trigger(miq_alert_name, trigger_id)
 
 # Saving Group Trigger
+print("Creating Group Trigger for {0}".format(miq_alert_name))
+
 client.create_group_trigger(group_trigger)
 
 # Generate Group Conditions
