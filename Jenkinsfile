@@ -22,11 +22,11 @@ pipeline {
         parallel(
           "Grab Events": {
             sh 'locust -f perf_testing/events_miq.py --host $HAWKULAR_HOST --port $HAWKULAR_PORT -r $MIQ_CLIENTS_RATE -c $MIQ_CLIENTS  --print-stats --no-web   --only-summary'
-            
+
           },
           "Send Data as Hawkular Agent": {
             sh 'locust -f perf_testing/mock_agent.py -c 100 -r 0.01 --no-web --host ${HAWKULAR_HOST}'
-            
+
           }
         )
       }

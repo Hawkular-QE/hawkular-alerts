@@ -54,10 +54,10 @@ class GenerateMetricsBehavior(TaskSet):
             metric_max = 'mw_heap_max_server-' + str(i)
 
             print ("Inserting Value for {0}".format(metric_used))
-            # client_mock.push(MetricType.Gauge, metric_used, values['used'])
-            #
-            # print ("Inserting Value for {0}".format(metric_max)
-            # client_mock.push(MetricType.Gauge, metric_max,  values['max'])
+            client_mock.push(MetricType.Gauge, metric_used, values['used'])
+
+            print ("Inserting Value for {0}".format(metric_max))
+            client_mock.push(MetricType.Gauge, metric_max,  values['max'])
 
             servers.append(i)
 
