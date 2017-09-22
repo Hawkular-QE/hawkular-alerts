@@ -55,11 +55,11 @@ class ProfileMiqEvents(TaskSet):
 
     @task(1)
     def check_events(self):
-        port = os.environ['HAWKULAR_PORT']
-        host = os.environ['HAWKULAR_HOST']
-        username = os.environ['HAWKULAR_USERNAME']
-        password = os.environ['HAWKULAR_PASSWORD']
-        tenant = os.environ['HAWKULAR_TENANT']
+        port = os.environ['MOCK_PORT']
+        host = os.environ['MOCK_HOST']
+        username = os.environ['MOCK_USERNAME']
+        password = os.environ['MOCK_PASSWORD']
+        tenant = os.environ['MOCK_TENANT']
 
 
         startTime = int((datetime.now() - timedelta(minutes=1)).strftime("%s")) * 1000
