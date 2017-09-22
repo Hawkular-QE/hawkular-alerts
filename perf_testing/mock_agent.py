@@ -30,7 +30,8 @@ class GenerateMetricsBehavior(TaskSet):
         global environment
         environment = Environment()
         global servers
-        servers = environment.num_servers
+        servers = range(environment.num_servers)
+
 
         def mimic_from_server(self,client,environment):
             used_dict =client .query_metric(MetricType.Gauge, environment.mimic_metric_used, **{'limit': 1, 'order': 'desc'})
@@ -49,12 +50,14 @@ class GenerateMetricsBehavior(TaskSet):
             i = servers[0]
             servers.pop(0)
 
-            print ("Inserting Value for {0}".format('mw_heap_used_server-' + str(i))
+            metric_used ='mw_heap_used_server-' + str(i)
+            metric_max = 'mw_heap_max_server-' + str(i)
 
-            client_mock.push(MetricType.Gauge, 'mw_heap_used_server-' + str(i), values['used'])
-
-           print ("Inserting Value for {0}".format('mw_heap_max_server-' + str(i))
-            client_mock.push(MetricType.Gauge, 'mw_heap_max_server-' + str(i),  values['max'])
+            print ("Inserting Value for {0}".format(metric_used))
+            # client_mock.push(MetricType.Gauge, metric_used, values['used'])
+            #
+            # print ("Inserting Value for {0}".format(metric_max)
+            # client_mock.push(MetricType.Gauge, metric_max,  values['max'])
 
             servers.append(i)
 
