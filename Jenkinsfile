@@ -6,9 +6,6 @@ pipeline {
         sh 'python -v'
       }
     }
-    stage('Openshift Hawkular Alerts') {
-      openshiftScale(namespace: 'alerts', deploymentConfig: 'alerts',replicaCount: '10')
-    }
     stage('Check Path and User') {
       steps {
         sh 'whoami'
