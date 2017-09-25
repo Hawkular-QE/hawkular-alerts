@@ -27,16 +27,16 @@ class Environment(object):
         self.num_servers = 100
 
 
-       def headers(self):
+   def headers(self):
 
-          b64Val=  base64.b64encode(self.username + ":" + self.password)
-          headers = {
-               'Authorization' : "Basic %s" % b64Val,
-               'content-type': "application/json"
-           }
+      b64Val=  base64.b64encode(self.username + ":" + self.password)
+      headers = {
+           'Authorization' : "Basic %s" % b64Val,
+           'content-type': "application/json"
+       }
 
-          headers['hawkular-tenant'] =self.tenant
-          return headers
+      headers['hawkular-tenant'] =self.tenant
+      return headers
 
 
     def url_alerts20(self):

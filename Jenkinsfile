@@ -12,7 +12,7 @@ pipeline {
         sh 'pwd'
       }
     }
-    stage('Create Group Triggers`') {
+    stage('Create Group Triggers') {
       steps {
         sh 'python perf_testing/mock_group_trigger.py'
       }
