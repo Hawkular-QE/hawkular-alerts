@@ -4,6 +4,7 @@ pipeline {
     stage('Python Config') {
       steps {
         sh 'python -v'
+        openshiftScale(namespace: 'alerts', deploymentConfig: 'alerts',replicaCount: '10')
       }
     }
     stage('Check Path and User') {
