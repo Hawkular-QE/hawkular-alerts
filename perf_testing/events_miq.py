@@ -36,43 +36,27 @@ def create_influxdb_connection():
     influxPassword = os.environ['INFLUX_PASSWORD']
     return InfluxDBClient(username=influxUser, password=influxPassword, database='hawkular_alerts_soak')
 
-
 class ProfileMiqEvents(TaskSet):
 
     def service_url(self,object):
         return self.base._service_url(object)
 
-    def headers(self, username, password, tenant):
-
-       b64Val=  base64.b64encode(username + ":" + password)
-       headers = {
-            'Authorization' : "Basic %s" % b64Val,
-            'content-type': "application/json"
-        }
-
-       headers['hawkular-tenant'] = tenant
-       return headers
-
     @task(1)
     def check_events(self):
-        port = os.environ['MOCK_PORT']
-        host = os.environ['MOCK_HOST']
-        username = os.environ['MOCK_USERNAME']
-        password = os.environ['MOCK_PASSWORD']
-        tenant = os.environ['MOCK_TENANT']
-
+        environment = Environment()
+        client_mock =  environment.create_hawkular_metrics_connection(environment.mock_parameters())
 
         startTime = int((datetime.now() - timedelta(minutes=1)).strftime("%s")) * 1000
         additionalParams = "&startTime=" + str(startTime)+ "&thin=true"
 
-        self.base = HawkularAlertsClient(tenant_id=tenant, host=host, port=port, username=username, password=password)
+        self.base = client_mock
 
         tags = "miq.event_type|*"
         url = self.service_url('events') + "?tags=" + tags + additionalParams
 
         global response_json
 
-        with self.client.get(url= url, headers=self.headers(username, password, tenant),
+        with self.client.get(url= url, headers=environment.headers(),
         catch_response=True) as response:
               if response.status_code == 200:
                   response_json = json.loads(response.content)

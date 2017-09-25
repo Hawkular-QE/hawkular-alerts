@@ -12,6 +12,8 @@ class Environment(object):
         self.hawkular_password = os.environ['HAWKULAR_PASSWORD']
         self.hawkular_tenant_id = os.environ['HAWKULAR_TENANT']
 
+        self.envinronment = os.environ['HAWKULAR_ALERTS_VERSION']
+
 
         self.mock_port = os.environ['MOCK_PORT']
         self.mock_host = os.environ['MOCK_HOST']
@@ -24,6 +26,25 @@ class Environment(object):
 
         self.num_servers = 100
 
+
+       def headers(self):
+
+          b64Val=  base64.b64encode(self.username + ":" + self.password)
+          headers = {
+               'Authorization' : "Basic %s" % b64Val,
+               'content-type': "application/json"
+           }
+
+          headers['hawkular-tenant'] =self.tenant
+          return headers
+
+
+    def url_alerts20(self):
+
+        return "http://" + self.hawkular_host + self.hawkular_port + "alerts/data"
+
+    def is_alerts20(self):
+        return (self.environment == "2.0")
 
     def hawkular_parameters(self):
 
