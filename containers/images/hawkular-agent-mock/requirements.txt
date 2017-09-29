@@ -1,0 +1,4 @@
+locust
+hawkular-client
+benchpy
+numpy
