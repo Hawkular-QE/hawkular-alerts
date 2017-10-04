@@ -25,6 +25,7 @@ from locust import HttpLocust, TaskSet, task
 
 from environment import Environment
 
+
 class GenerateMetricsBehavior(TaskSet):
         @staticmethod
         def mimic_from_eap_server():
@@ -46,12 +47,13 @@ class GenerateMetricsBehavior(TaskSet):
 
             time = datetime.now()
 
-            max_value = create_datapoint( float( values['max']['value']), time)
-            used_value = create_datapoint( float( values['used']['value']), int((time + timedelta(seconds=1)).strftime( "%s")) * 1000)
+            max_value = create_datapoint(float(values['max']['value']), time)
+            used_value = create_datapoint(float(values['used']['value']),
+                                          int((time + timedelta(seconds=1)).strftime("%s")) * 1000)
 
             if environment.is_alerts20():
                 # For 2.0 method
-                url = environment.url_alerts20()
+                url = environment.url_alerts20
 
                 used_value['id'] = metric_used
                 max_value['id'] = metric_max
@@ -62,8 +64,11 @@ class GenerateMetricsBehavior(TaskSet):
                 self.client.post(url=url, headers=environment.headers, data=json.dumps([used_value]))
 
             else:
-                self.client.post(url=environment.url_metrics(metric_max), headers=environment.headers, data=json.dumps([max_value]))
-                self.client.post(url=environment.url_metrics(metric_used), headers=environment.headers, data=json.dumps([used_value]))
+                self.client.post(url=environment.url_metrics(metric_max),
+                                 headers=environment.headers, data=json.dumps([max_value]))
+                self.client.post(url=environment.url_metrics(metric_used),
+                                 headers=environment.headers, data=json.dumps([used_value]))
+
 
 class HawkularAgent(HttpLocust):
     global environment
