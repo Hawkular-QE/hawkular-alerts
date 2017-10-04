@@ -1,0 +1,118 @@
+#
+# Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
+# and other contributors as indicated by the @author tags.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+# @author Guilherme Baufaker Rêgo (gbaufake)
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+kind: Template
+apiVersion: v1
+metadata:
+  name: InfluxDB
+  annotations:
+    openshift.io/display-name: InfluxDB
+    description: InfluxDB - A timeseries database
+parameters:
+- name: INFLUXDB_IMAGE
+  description: What docker image should be used for influxdb
+  value: influxdb:latest
+
+- name: INFLUXDB_ADMIN_USER
+  description: Username that is used for accessing the InfluxDB
+  value: admin
+
+- name: INFLUXDB_ADMIN_PASSWORD
+  description: Password that is used for accessing the InfluxDB
+  value: ''
+
+- name: INFLUXDB_MEMORY_LIMIT
+  description: Memory Limit for InfluxDB
+  value: 2Gi
+
+- name: INFLUXDB_HOSTNAME
+  description: Hostname for InfluxDB
+  value: ''
+
+objects:
+- apiVersion: 'v1'
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      description: Defines how to deploy the influxdb
+    name: influxdb
+  spec:
+    replicas: 1
+    selector:
+      name: influxdb
+    strategy:
+      type: Rolling
+      rollingParams:
+        timeoutSeconds: '300'
+    template:
+      metadata:
+        labels:
+          name: influxdb
+      spec:
+        containers:
+        - image: ${INFLUXDB_IMAGE}
+          env:
+          - name: INFLUXDB_HTTP_AUTH_ENABLED
+            value: 'true'
+          - name: INFLUXDB_ADMIN_USER
+            value: ${INFLUXDB_ADMIN_USER}
+          - name: INFLUXDB_ADMIN_PASSWORD
+            value: ${INFLUXDB_ADMIN_PASSWORD}
+          imagePullPolicy: Always
+          name: influxdb
+          volumeMounts:
+          - name: influxdb-data
+            mountPath: /var/lib/influxdb
+          ports:
+          - containerPort: '8086'
+          resources:
+            limits:
+              memory: ${INFLUXDB_MEMORY_LIMIT}
+        volumes:
+        - name: influxdb-data
+          emptyDir: {}
+
+- apiVersion: 'v1'
+  kind: Service
+  metadata:
+    annotations:
+      description: influxdb Service
+    name: influxdb
+  spec:
+    ports:
+    - name: influx-8086-tcp
+      port: 8086
+      protocol: TCP
+      targetPort: 8086
+    selector:
+      name: influxdb
+
+- apiVersion: 'v1'
+  kind: Route
+  metadata:
+    name: influxdb-route
+  spec:
+    host: ${INFLUXDB_HOSTNAME}
+    port:
+      targetPort: influx-8086-tcp
+    to:
+      kind: Service
+      name: influxdb
+      weight: 100
+    wildcardPolicy: None
