@@ -64,7 +64,7 @@ class ManageIQUser (HttpLocust):
         metrics = {}
         tags = {'execution': identifier}
         metrics[ 'measurement'] = "request"
-        fields = {'alerts_version': utils.alerts_version(),'triggers': len(utils.alertsClient.list_triggers()) -1,
+        fields = {'alerts_version': utils.alerts_version(),'triggers': utils.number_triggers(),
                   'request_type': request_type,
                   'response_time': response_time, 'response_length': response_length,
                   'events_count': len( response_json), 'name': name}

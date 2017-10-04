@@ -17,7 +17,7 @@ See the License for the specific language governing permissions and
 limitations under the License
 """
 
-from hawkular import HawkularAlertsClient
+from hawkular import HawkularAlertsClient, Trigger
 import os
 import base64
 from influxdb import InfluxDBClient
@@ -47,4 +47,13 @@ class MockMiqUtils(object):
        return float('.'.join(str(x) for x in self.alertsClient.query_semantic_version()))
 
     def create_database(self):
-        return self.influxClient.query ( "CREATE DATABASE " + os.environ[ 'INFLUX_DATABASE'])
+        return self.influxClient.query( "CREATE DATABASE " + os.environ[ 'INFLUX_DATABASE'])
+
+    def number_triggers(self):
+        # TODO This a quick fix until https://github.com/hawkular/hawkular-client-python/pull/50 is not merged on
+        # Hawkular Python Client
+        url = self.alertsClient._service_url('triggers')
+        triggers_dict = self.alertsClient._get(url)
+
+        # Exclude the Group Trigger from counting (-1) and return 0, if there is only the group trigger
+        return max(len(Trigger.list_to_object_list(triggers_dict)) -1, 0)
