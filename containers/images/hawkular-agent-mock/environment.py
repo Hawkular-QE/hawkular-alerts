@@ -34,9 +34,9 @@ class Environment (object):
                 os.environ['HAWKULAR_USERNAME'], 'password': os.environ['HAWKULAR_PASSWORD'], 'tenant_id':
                 os.environ['HAWKULAR_TENANT']})
 
-        self.headers = {'Authorization': "Basic %s" % base64.b64encode(os.environ[ 'HAWKULAR_USERNAME'] + ":" +
-                                                                       os.environ[ 'HAWKULAR_PASSWORD']),
-                        "Content-Type": "application/json", 'hawkular-tenant': "%s" % os.environ[ 'HAWKULAR_TENANT']}
+        self.headers = {'Authorization': "Basic %s" % base64.b64encode(os.environ['HAWKULAR_USERNAME'] + ":" +
+                                                                       os.environ['HAWKULAR_PASSWORD']),
+                        "Content-Type": "application/json", 'hawkular-tenant': "%s" % os.environ['HAWKULAR_TENANT']}
 
         # Metrics to be compared
         self.metricUsed = 'mw_heap_used'
@@ -54,10 +54,10 @@ class Environment (object):
     @staticmethod
     def url_metrics(metric_name):
         metricsClient = HawkularMetricsClient(
-            **{'port': os.environ[ 'HAWKULAR_PORT'], 'host': os.environ[ 'HAWKULAR_HOST'],
+            **{'port': os.environ['HAWKULAR_PORT'], 'host': os.environ['HAWKULAR_HOST'],
                'username': os.environ['HAWKULAR_USERNAME'], 'password': os.environ[ 'HAWKULAR_PASSWORD'],
                'tenant_id': os.environ['HAWKULAR_TENANT']})
-        return metricsClient._service_url( ([ 'gauges', metric_name, 'raw']))
+        return metricsClient._service_url(([ 'gauges', metric_name, 'raw']))
 
     @staticmethod
     def initialize_sample_group_condition(metric, metric2):
@@ -101,11 +101,11 @@ class Environment (object):
         member = GroupMemberInfo()
         group_trigger = self.check_group_trigger()
         member.group_id = group_trigger.id
-        member.member_id = str( random.getrandbits( 128))
+        member.member_id = str(random.getrandbits( 128))
         member.member_name = group_trigger.name + " for " + server_name
 
         if self.is_alerts20():
-            data_map = {metric1: metric1 + "_" + server_name, metric2: + metric2 + "_" + server_name}
+            data_map = {metric1: metric1 + "_" + server_name, metric2:  metric2 + "_" + server_name}
         else:
             data_map = {metric1: "hm_g_" + metric1 + "_" + server_name, metric2: "hm_g_" + metric2 + "_" + server_name}
 
@@ -114,7 +114,7 @@ class Environment (object):
 
     @property
     def url_alerts20(self):
-        return self.alertsClient._service_url([ 'data'])
+        return self.alertsClient._service_url(['data'])
 
     def is_alerts20(self):
         return self.alertsClient.query_semantic_version() >= (2, 0)
