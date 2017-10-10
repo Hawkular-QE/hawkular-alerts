@@ -44,8 +44,7 @@ objects:
           app: hawkular-alerts
       spec:
         containers:
-        - env:
-          image: hawkular/hawkular-alerts
+        - image: hawkular/hawkular-alerts
           name: hawkular-alerts
           imagePullPolicy: Always
           ports:
@@ -68,15 +67,47 @@ objects:
       app: hawkular-alerts
     type: LoadBalancer
 
-- apiVersion: route.openshift.io/v1
+
+- apiVersion: v1
   kind: Route
   metadata:
     name: hawkular-alerts
   spec:
-    host: ${ROUTE_NAME}
+    host:
     path:
     port:
       targetPort: hawkular-alerts
     to:
       kind: Service
       name: hawkular-alerts
+
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: hawkular-alerts-jmx
+    labels:
+      app: hawkular-alerts
+  spec:
+    ports:
+      - name: hawkular-alerts
+        port: 9010
+        protocol: TCP
+        targetPort: 9010
+    selector:
+      app: hawkular-alerts
+
+
+- apiVersion: v1
+  kind: Route
+  metadata:
+    name: hawkular-alerts-jmx
+  spec:
+    host: hawkular-alerts-jmx.ose.osoos.osepool.centralci.eng.rdu2.redhat.com
+    path:
+    port:
+      targetPort: hawkular-alerts-jmx
+    to:
+      kind: Service
+      name: hawkular-alerts-jmx
+
+

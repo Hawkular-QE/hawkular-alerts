@@ -1,0 +1,140 @@
+#
+# Copyright 2016-2017 Red Hat, Inc. and/or its affiliates
+# and other contributors as indicated by the @author tags.
+#
+#  @author Guilherme Baufaker Rêgo (gbaufake)
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+apiVersion: v1
+kind: Template
+metadata:
+  name: hawkular-mock-agent
+  annotations:
+    openshift.io/display-name: Hawkular Agent Mock
+    description: a QE test for Hawkular Services. It runs as Hawkular Agent
+parameters:
+
+- name: MOCK_HAWKULAR_AGENT_IMAGE
+  description: What docker image should be used for hawkular-agent-mock
+  value: gbaufake/hawkular-agent-mock:1.2
+
+- name: HAWKULAR_HOST
+  description: What is the Hawkular Host
+  value:
+
+- name: HAWKULAR_PORT
+  description: What is the Hawkular Port
+  value: '80'
+
+- name: HAWKULAR_USERNAME
+  description: What is the Hawkular username
+  value: jdoe
+
+- name: HAWKULAR_PASSWORD
+  description: What is the Hawkular password
+  value: password
+
+- name: HAWKULAR_TENANT
+  description: What is the Hawkular Tenant
+  value: hawkular-test
+
+- name: MILLISECONDS_REQUEST
+  description: Define how many seconds the application needs to wait until the next request
+  value: '30000'
+
+- name: INFLUX_HOST
+  description: InfluxDB Host
+  value:
+
+- name: INFLUX_USERNAME
+  description: Username that is used for accessing the InfluxDB
+  value: admin
+
+- name: INFLUX_PASSWORD
+  description: InfluDB Password that is used for accessing the InfluxDb
+
+  value:
+- name: INFLUX_PORT
+  description: What is the Influx port
+  value: '80'
+
+- name: INFLUX_DATABASE
+  description: InfluxDB Database for hawkular-mock-agent
+  value: hawkular_alerts_soak
+
+- name: TRIGGER_ID
+  description: Define an General Group Trigger (Every new server will be connected to it)
+  value:
+
+objects:
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      description: Defines how to deploy the application server
+    name: hawkular-mock-agent
+  spec:
+    replicas: '1'
+    selector:
+      name: hawkular-mock-agent
+    strategy:
+      type: Recreate
+    template:
+      metadata:
+        labels:
+          name: hawkular-mock-agent
+      spec:
+        containers:
+        - image: ${MOCK_HAWKULAR_AGENT_IMAGE}
+          env:
+          - name: HAWKULAR_HOST
+            value: ${HAWKULAR_HOST}
+
+          - name: HAWKULAR_PORT
+            value: ${HAWKULAR_PORT}
+
+          - name: HAWKULAR_TENANT
+            value: ${HAWKULAR_TENANT}
+
+          - name: HAWKULAR_USERNAME
+            value: ${HAWKULAR_USERNAME}
+
+          - name: HAWKULAR_PASSWORD
+            value: ${HAWKULAR_PASSWORD}
+
+          - name: HAWKULAR_TENANT
+            value: ${HAWKULAR_TENANT}
+
+          - name: INFLUX_HOST
+            value: ${INFLUX_HOST}
+
+          - name: INFLUX_PORT
+            value: ${INFLUX_PORT}
+
+          - name: INFLUX_DATABASE
+            value: ${INFLUX_DATABASE}
+
+          - name: INFLUX_USERNAME
+            value: ${INFLUX_USERNAME}
+
+          - name: INFLUX_PASSWORD
+            value: ${INFLUX_PASSWORD}
+
+          - name: MILLISECONDS_REQUEST
+            value: ${MILLISECONDS_REQUEST}
+
+          - name: TRIGGER_ID
+            value: ${TRIGGER_ID}
+          imagePullPolicy: Always
+          name: hawkular-mock-agent
