@@ -24,7 +24,6 @@ import locust.events
 import locust.stats
 from utils import MockMiqUtils
 from locust import HttpLocust, TaskSet, task
-from locust.exception import StopLocust
 
 
 class ProfileMiqEvents (TaskSet):
@@ -34,14 +33,15 @@ class ProfileMiqEvents (TaskSet):
         startTime = int((datetime.now() - timedelta( minutes=1)).strftime( "%s")) * 1000
         additionalParams = "&startTime=" + str( startTime) + "&thin=true"
 
-        global response_json
+        global response_json, response_code
 
-        with self.client.get(url=utils.miq_url( additionalParams), headers=utils.headers, catch_response=True) \
+        response_code = None
+        response_json = None
+
+        with self.client.get(url=utils.miq_url(additionalParams), headers=utils.headers, catch_response=True) \
                 as response:
-            if response.status_code == 200:
-                response_json = json.loads( response.content)
-            else:
-                raise StopLocust()
+                response_json = json.loads(response.content)
+                response_code = response.status_code
 
 
 class ManageIQUser (HttpLocust):
@@ -63,14 +63,14 @@ class ManageIQUser (HttpLocust):
     def hook_request_success(self, request_type, name, response_time, response_length):
         metrics = {}
         tags = {'execution': identifier}
-        metrics[ 'measurement'] = "request"
+        metrics['measurement'] = "request"
         fields = {'alerts_version': utils.alerts_version(),'triggers': utils.number_triggers(),
-                  'request_type': request_type,
+                  'request_type': request_type, 'response_code': response_code,
                   'response_time': response_time, 'response_length': response_length,
-                  'events_count': len( response_json), 'name': name}
-        metrics[ 'fields'] = fields
-        metrics[ 'tags'] = tags
-        client.write_points( [ metrics])
+                  'events_count': len(response_json), 'name': name}
+        metrics['fields'] = fields
+        metrics['tags'] = tags
+        client.write_points([metrics])
 
     def hook_request_fail(self, request_type, name, response_time, exception):
         metrics = {}
